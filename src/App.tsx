@@ -31,6 +31,11 @@ export const App = () => {
     }
   }, []);
 
+  const updateRooms = (updatedRooms: ChatRoomType[]) => {
+    setRooms(updatedRooms);
+    saveChatRooms(updatedRooms);
+  };
+
   const handleLogin = (userName: string) => {
     const user: User = {
       id: userName,
@@ -39,10 +44,6 @@ export const App = () => {
     setUser(user);
     localStorage.setItem("user", JSON.stringify(user));
     setShowLoginForm(false);
-  };
-
-  const handleLoginClick = () => {
-    setShowLoginForm(true);
   };
 
   const handleSelectRoom = (selectedRoom: ChatRoomType) => {
@@ -64,21 +65,20 @@ export const App = () => {
         avatarUrl: "",
       };
       const updatedRooms = [...rooms, newRoom];
-      saveChatRooms(updatedRooms);
-      setRooms(updatedRooms);
-      setRoom(newRoom);
+      updateRooms(updatedRooms);
+      setRoom(newRoom); 
       localStorage.setItem("selectedRoomId", newRoom.id);
     }
   };
 
+  // Обработчик удаления комнаты
   const handleDeleteRoom = (roomId: string) => {
     const roomToDelete = rooms.find((room) => room.id === roomId);
     if (roomToDelete && user && roomToDelete.creatorId === user.id) {
       const confirmDelete = window.confirm("Вы точно хотите удалить этот чат? Все данные будут утеряны.");
       if (confirmDelete) {
         const updatedRooms = rooms.filter((room) => room.id !== roomId);
-        saveChatRooms(updatedRooms);
-        setRooms(updatedRooms);
+        updateRooms(updatedRooms);
 
         if (room?.id === roomId) {
           setRoom(null);
@@ -111,7 +111,7 @@ export const App = () => {
     <div>
       <Toolbar
         user={user}
-        onLoginClick={handleLoginClick}
+        onLoginClick={() => setShowLoginForm(true)}
         onLogoutClick={handleToolbarLogout}
         onTitleClick={handleTitleClick}
       />
@@ -137,6 +137,7 @@ export const App = () => {
                 userId={user.id}
                 userName={user.name}
                 onLogout={handleChatLogout}
+                updateRooms={updateRooms} 
               />
             )}
           </>

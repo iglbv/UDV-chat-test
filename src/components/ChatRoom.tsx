@@ -1,29 +1,22 @@
 import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
 import { CustomEmojiPicker } from "./EmojiPicker";
-import { saveChatRooms, loadChatRooms } from "../utils/storage";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { loadChatRooms } from "../utils/storage";
 
 interface ChatRoomProps {
     room: ChatRoomType;
     userId: string;
     userName: string;
     onLogout: () => void;
+    updateRooms: (rooms: ChatRoomType[]) => void;
 }
 
-export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) => {
+export const ChatRoom = ({ room, userId, userName, onLogout, updateRooms }: ChatRoomProps) => {
     const [messages, setMessages] = useState<Message[]>(room.messages);
     const [newMessage, setNewMessage] = useState("");
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-    useEffect(() => {
-        const rooms = loadChatRooms();
-        const currentRoom = rooms.find(r => r.id === room.id);
-        if (currentRoom) {
-            setMessages(currentRoom.messages);
-        }
-    }, [room.id]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -50,7 +43,12 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
 
             const updatedMessages = [...messages, message];
             setMessages(updatedMessages);
-            updateRoomMessages(updatedMessages);
+
+            const updatedRoom = { ...room, messages: updatedMessages };
+            const rooms = loadChatRooms();
+            const updatedRooms = rooms.map((r) => (r.id === room.id ? updatedRoom : r));
+            updateRooms(updatedRooms);
+
             setNewMessage("");
             setReplyToMessage(null);
             setSelectedFile(null);
@@ -60,14 +58,11 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
     const handleDeleteMessage = (messageId: string) => {
         const updatedMessages = messages.filter((message) => message.id !== messageId);
         setMessages(updatedMessages);
-        updateRoomMessages(updatedMessages);
-    };
 
-    const updateRoomMessages = (updatedMessages: Message[]) => {
-        const rooms = loadChatRooms();
         const updatedRoom = { ...room, messages: updatedMessages };
+        const rooms = loadChatRooms();
         const updatedRooms = rooms.map((r) => (r.id === room.id ? updatedRoom : r));
-        saveChatRooms(updatedRooms);
+        updateRooms(updatedRooms);
     };
 
     const handleReply = (message: Message) => {
