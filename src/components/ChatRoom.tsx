@@ -2,7 +2,7 @@ import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
 import { CustomEmojiPicker } from "./EmojiPicker";
 import { saveChatRooms, loadChatRooms } from "../utils/storage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ChatRoomProps {
     room: ChatRoomType;
@@ -16,6 +16,14 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
     const [newMessage, setNewMessage] = useState("");
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        const rooms = loadChatRooms();
+        const currentRoom = rooms.find(r => r.id === room.id);
+        if (currentRoom) {
+            setMessages(currentRoom.messages);
+        }
+    }, [room.id]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -74,8 +82,14 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
     return (
         <div className="chat-room">
             <div className="chat-header">
+                <div className="room-avatar">
+                    <div className="default-avatar">{room.name[0]}</div>
+                </div>
                 <h2>Комната: {room.name}</h2>
                 <div>
+                    <div className="user-avatar">
+                        <div className="default-avatar">{userName[0]}</div>
+                    </div>
                     <span>Пользователь: {userName}</span>
                     <button className="logout-button" onClick={onLogout}>
                         Выйти из чата

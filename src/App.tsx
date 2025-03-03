@@ -61,6 +61,7 @@ export const App = () => {
         name: roomName.trim(),
         messages: [],
         creatorId: user.id,
+        avatarUrl: "",
       };
       const updatedRooms = [...rooms, newRoom];
       saveChatRooms(updatedRooms);
@@ -112,7 +113,7 @@ export const App = () => {
         user={user}
         onLoginClick={handleLoginClick}
         onLogoutClick={handleToolbarLogout}
-        onTitleClick={handleTitleClick} 
+        onTitleClick={handleTitleClick}
       />
       <div className="content">
         {!user || showLoginForm ? (
@@ -128,6 +129,7 @@ export const App = () => {
                 newRoomName={newRoomName}
                 setNewRoomName={setNewRoomName}
                 user={user}
+                setRooms={setRooms}
               />
             ) : (
               <ChatRoom

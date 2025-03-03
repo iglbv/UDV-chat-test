@@ -171,16 +171,32 @@ body {
 
 .chat-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 1rem;
   background-color: var(--primary-color);
   color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .chat-header h2 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.room-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1abc9c;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .chat-header span {
@@ -566,6 +582,26 @@ body {
 .emoji-picker-react .epr-emoji-item:hover {
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
+}
+
+.chat-avatar,
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1abc9c;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.default-avatar {
+  text-transform: uppercase;
 }
 
 @keyframes fadeIn {

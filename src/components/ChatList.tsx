@@ -8,6 +8,7 @@ interface ChatListProps {
     newRoomName: string;
     setNewRoomName: (name: string) => void;
     user: User | null;
+    setRooms: (rooms: ChatRoom[]) => void;
 }
 
 export const ChatList = ({
@@ -42,7 +43,12 @@ export const ChatList = ({
                     <ul className="chat-list">
                         {rooms.map((room) => (
                             <li key={room.id} onClick={() => onSelectRoom(room)}>
-                                <span>{room.name}</span>
+                                <div className="chat-info">
+                                    <div className="chat-avatar">
+                                        <div className="default-avatar">{room.name[0]}</div>
+                                    </div>
+                                    <span>{room.name}</span>
+                                </div>
                                 {user && room.creatorId === user.id && (
                                     <button
                                         className="delete-chat-button"
