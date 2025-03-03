@@ -154,7 +154,7 @@ body {
   color: white;
 }
 
-.delete-button {
+.delete-chat-button {
   padding: 2px 5px;
   font-size: 12px;
   margin-left: 10px;
@@ -165,7 +165,7 @@ body {
   cursor: pointer;
 }
 
-.delete-button:hover {
+.delete-chat-button:hover {
   background-color: #ff1a1a;
 }
 
@@ -284,7 +284,7 @@ body {
 }
 
 .reply-button,
-.delete-button {
+.delete-message-button {
   background-color: transparent;
   border: none;
   color: var(--secondary-color);
@@ -297,7 +297,7 @@ body {
 }
 
 .message:hover .reply-button,
-.message:hover .delete-button {
+.message:hover .delete-message-button {
   opacity: 1;
 }
 
@@ -306,12 +306,12 @@ body {
   color: white;
 }
 
-.delete-button {
+.delete-message-button {
   background-color: #ff4d4d;
   color: white;
 }
 
-.delete-button:hover {
+.delete-message-button:hover {
   background-color: #ff1a1a;
 }
 
@@ -324,11 +324,12 @@ body {
 }
 
 .replying-to button {
-  background-color: var(--background-color);
+  background-color: var(--hover-color);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 2px 5px;
   cursor: pointer;
+  margin: 5px;
 }
 
 .message strong {
@@ -517,16 +518,12 @@ body {
   z-index: 1000;
 }
 
-/* Стили для элементов emoji-picker-react (переопределение стилей библиотеки) */
-
-/* Общий контейнер emoji picker */
 .emoji-picker-react {
   width: 300px !important;
   max-width: none !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 
-/* Стили для контейнера поиска */
 .emoji-picker-react .epr-search {
   margin-bottom: 0.5rem;
 }
@@ -538,7 +535,6 @@ body {
   border-radius: 4px;
 }
 
-/* Стили для категорий (вкладок) */
 .emoji-picker-react .epr-categories {
   background-color: var(--background-color);
 }
@@ -551,13 +547,11 @@ body {
   color: var(--hover-color);
 }
 
-/* Стили для контейнера эмодзи */
 .emoji-picker-react .epr-emoji-scroll-wrapper {
   overflow-y: auto;
   max-height: 200px;
 }
 
-/* Стили для отдельного эмодзи */
 .emoji-picker-react .epr-emoji-item {
   display: inline-block;
   width: auto;

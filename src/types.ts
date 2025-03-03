@@ -17,4 +17,5 @@ export interface ChatRoom {
     id: string;
     name: string;
     messages: Message[];
+    creatorId: string;
 }

@@ -32,8 +32,10 @@ export const App = () => {
   }, []);
 
   const handleLogin = (userName: string) => {
-    const userId = Date.now().toString();
-    const user = { id: userId, name: userName };
+    const user: User = {
+      id: userName,
+      name: userName,
+    };
     setUser(user);
     localStorage.setItem("user", JSON.stringify(user));
     setShowLoginForm(false);
@@ -53,8 +55,13 @@ export const App = () => {
   };
 
   const handleCreateRoom = (roomName: string) => {
-    if (roomName.trim()) {
-      const newRoom = { id: Date.now().toString(), name: roomName.trim(), messages: [] };
+    if (roomName.trim() && user) {
+      const newRoom = {
+        id: Date.now().toString(),
+        name: roomName.trim(),
+        messages: [],
+        creatorId: user.id,
+      };
       const updatedRooms = [...rooms, newRoom];
       saveChatRooms(updatedRooms);
       setRooms(updatedRooms);
@@ -64,16 +71,21 @@ export const App = () => {
   };
 
   const handleDeleteRoom = (roomId: string) => {
-    const confirmDelete = window.confirm("Вы точно хотите удалить этот чат? Все данные будут утеряны.");
-    if (confirmDelete) {
-      const updatedRooms = rooms.filter((room) => room.id !== roomId);
-      saveChatRooms(updatedRooms);
-      setRooms(updatedRooms);
+    const roomToDelete = rooms.find((room) => room.id === roomId);
+    if (roomToDelete && user && roomToDelete.creatorId === user.id) {
+      const confirmDelete = window.confirm("Вы точно хотите удалить этот чат? Все данные будут утеряны.");
+      if (confirmDelete) {
+        const updatedRooms = rooms.filter((room) => room.id !== roomId);
+        saveChatRooms(updatedRooms);
+        setRooms(updatedRooms);
 
-      if (room?.id === roomId) {
-        setRoom(null);
-        localStorage.removeItem("selectedRoomId");
+        if (room?.id === roomId) {
+          setRoom(null);
+          localStorage.removeItem("selectedRoomId");
+        }
       }
+    } else {
+      alert("Вы не можете удалить этот чат, так как вы не являетесь его создателем.");
     }
   };
 
@@ -89,9 +101,19 @@ export const App = () => {
     localStorage.removeItem("selectedRoomId");
   };
 
+  const handleTitleClick = () => {
+    setRoom(null);
+    localStorage.removeItem("selectedRoomId");
+  };
+
   return (
     <div>
-      <Toolbar user={user} onLoginClick={handleLoginClick} onLogoutClick={handleToolbarLogout} />
+      <Toolbar
+        user={user}
+        onLoginClick={handleLoginClick}
+        onLogoutClick={handleToolbarLogout}
+        onTitleClick={handleTitleClick} 
+      />
       <div className="content">
         {!user || showLoginForm ? (
           <LoginForm onLogin={handleLogin} />
@@ -105,6 +127,7 @@ export const App = () => {
                 onDeleteRoom={handleDeleteRoom}
                 newRoomName={newRoomName}
                 setNewRoomName={setNewRoomName}
+                user={user}
               />
             ) : (
               <ChatRoom
@@ -117,7 +140,7 @@ export const App = () => {
           </>
         )}
       </div>
-      <Footer /> 
+      <Footer />
     </div>
   );
 };

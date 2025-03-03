@@ -1,4 +1,4 @@
-import { ChatRoom } from "../types";
+import { ChatRoom, User } from "../types";
 
 interface ChatListProps {
     rooms: ChatRoom[];
@@ -7,6 +7,7 @@ interface ChatListProps {
     onDeleteRoom: (roomId: string) => void;
     newRoomName: string;
     setNewRoomName: (name: string) => void;
+    user: User | null;
 }
 
 export const ChatList = ({
@@ -16,16 +17,15 @@ export const ChatList = ({
     onDeleteRoom,
     newRoomName,
     setNewRoomName,
+    user,
 }: ChatListProps) => {
     const handleCreateRoom = () => {
         if (newRoomName.trim()) {
             const roomNameExists = rooms.some((room) => room.name === newRoomName.trim());
-
             if (roomNameExists) {
                 alert("Чат с таким названием уже существует.");
                 return;
             }
-
             onCreateRoom(newRoomName.trim());
             setNewRoomName("");
         }
@@ -43,15 +43,17 @@ export const ChatList = ({
                         {rooms.map((room) => (
                             <li key={room.id} onClick={() => onSelectRoom(room)}>
                                 <span>{room.name}</span>
-                                <button
-                                    className="delete-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onDeleteRoom(room.id);
-                                    }}
-                                >
-                                    Удалить
-                                </button>
+                                {user && room.creatorId === user.id && (
+                                    <button
+                                        className="delete-chat-button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onDeleteRoom(room.id);
+                                        }}
+                                    >
+                                        Удалить
+                                    </button>
+                                )}
                             </li>
                         ))}
                     </ul>

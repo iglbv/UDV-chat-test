@@ -44,7 +44,7 @@ export const MessageList = ({ messages, onReply, onDeleteMessage, currentUserId 
                             </button>
                             {message.userId === currentUserId && (
                                 <button
-                                    className="delete-button"
+                                    className="delete-message-button"
                                     onClick={() => onDeleteMessage(message.id)}
                                 >
                                     Удалить
