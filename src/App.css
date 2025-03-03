@@ -43,9 +43,15 @@ body {
 }
 
 .login-form h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: var(--primary-color);
   font-size: 1.8rem;
+}
+
+.login-form p {
+  margin-bottom: 1.5rem;
+  color: var(--secondary-color);
+  font-size: 1rem;
 }
 
 .login-form input {
@@ -76,19 +82,18 @@ body {
 }
 
 .login-form button:hover {
-  background-color: #16a085; 
+  background-color: #16a085;
 }
 
 .chat-room {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 70px);
+  max-width: 800px;
   margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .chat-room h2 {
@@ -131,7 +136,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-
 .chat-list li {
   display: flex;
   justify-content: space-between;
@@ -172,8 +176,6 @@ body {
   padding: 1rem;
   background-color: var(--primary-color);
   color: white;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
 }
 
 .chat-header h2 {
@@ -273,21 +275,16 @@ body {
   background-color: var(--background-color);
 }
 
-.message button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem; 
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 2px 5px;
-  cursor: pointer;
-}
-
-.message button.reply-button {
+.message-actions {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reply-button,
+.delete-button {
   background-color: transparent;
   border: none;
   color: var(--secondary-color);
@@ -299,13 +296,23 @@ body {
   transition: opacity var(--transition-speed);
 }
 
-.message:hover button.reply-button {
+.message:hover .reply-button,
+.message:hover .delete-button {
   opacity: 1;
 }
 
-.message button.reply-button:hover {
+.reply-button:hover {
   background-color: var(--hover-color);
   color: white;
+}
+
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #ff1a1a;
 }
 
 .replying-to {
@@ -400,15 +407,14 @@ body {
 
 .toolbar-login-button:hover,
 .toolbar-logout-button:hover {
-  background-color: #16a085; 
+  background-color: #16a085;
 }
-
 
 .content {
   margin-top: 70px;
   padding: 1rem;
-  height: calc(100vh - 70px - 2rem);
- 
+  height: calc(100vh - 70px - 2rem - 40px);
+  overflow-y: auto;
 }
 
 .welcome-message {
@@ -427,14 +433,145 @@ body {
   color: var(--secondary-color);
 }
 
+.media-container {
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+}
+
 .message-media {
-  max-width: 600px;
-  max-height: 600px;
+  max-width: 100%;
+  max-height: 300px;
   width: auto;
   height: auto;
+  border-radius: 8px;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.message-media:hover {
+  transform: scale(1.05);
+}
+
+.quoted-message {
+  background-color: #f0f0f0;
+  padding: 0.5rem;
   border-radius: 4px;
-  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.no-chats-message {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  z-index: 1000;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.emoji-picker-container {
+  position: relative;
+  display: inline-block;
+}
+
+.emoji-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.emoji-button:hover {
+  transform: scale(1.1);
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  z-index: 1000;
+}
+
+/* Стили для элементов emoji-picker-react (переопределение стилей библиотеки) */
+
+/* Общий контейнер emoji picker */
+.emoji-picker-react {
+  width: 300px !important;
+  max-width: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+/* Стили для контейнера поиска */
+.emoji-picker-react .epr-search {
+  margin-bottom: 0.5rem;
+}
+
+.emoji-picker-react .epr-search input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+/* Стили для категорий (вкладок) */
+.emoji-picker-react .epr-categories {
+  background-color: var(--background-color);
+}
+
+.emoji-picker-react .epr-categories button {
+  color: var(--text-color);
+}
+
+.emoji-picker-react .epr-categories button.active {
+  color: var(--hover-color);
+}
+
+/* Стили для контейнера эмодзи */
+.emoji-picker-react .epr-emoji-scroll-wrapper {
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+/* Стили для отдельного эмодзи */
+.emoji-picker-react .epr-emoji-item {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  font-size: 1.5em;
+  padding: 0.25em;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.emoji-picker-react .epr-emoji-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
 }
 
 @keyframes fadeIn {

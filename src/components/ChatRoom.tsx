@@ -1,5 +1,6 @@
 import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
+import { CustomEmojiPicker } from "./EmojiPicker";
 import { saveChatRooms, loadChatRooms } from "../utils/storage";
 import { useState } from "react";
 
@@ -41,19 +42,33 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
 
             const updatedMessages = [...messages, message];
             setMessages(updatedMessages);
-            const rooms = loadChatRooms();
-            const updatedRoom = { ...room, messages: updatedMessages };
-            const updatedRooms = rooms.map((r) => (r.id === room.id ? updatedRoom : r));
-            saveChatRooms(updatedRooms);
+            updateRoomMessages(updatedMessages);
             setNewMessage("");
             setReplyToMessage(null);
             setSelectedFile(null);
         }
     };
 
+    const handleDeleteMessage = (messageId: string) => {
+        const updatedMessages = messages.filter((message) => message.id !== messageId);
+        setMessages(updatedMessages);
+        updateRoomMessages(updatedMessages);
+    };
+
+    const updateRoomMessages = (updatedMessages: Message[]) => {
+        const rooms = loadChatRooms();
+        const updatedRoom = { ...room, messages: updatedMessages };
+        const updatedRooms = rooms.map((r) => (r.id === room.id ? updatedRoom : r));
+        saveChatRooms(updatedRooms);
+    };
+
     const handleReply = (message: Message) => {
         setReplyToMessage(message);
         setNewMessage(`@${message.userName}: `);
+    };
+
+    const handleEmojiClick = (emoji: string) => {
+        setNewMessage((prevMessage) => prevMessage + emoji);
     };
 
     return (
@@ -63,7 +78,7 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
                 <div>
                     <span>Пользователь: {userName}</span>
                     <button className="logout-button" onClick={onLogout}>
-                        Выйти
+                        Выйти из чата
                     </button>
                 </div>
             </div>
@@ -73,15 +88,26 @@ export const ChatRoom = ({ room, userId, userName, onLogout }: ChatRoomProps) =>
                     <button onClick={() => setReplyToMessage(null)}>Отмена</button>
                 </div>
             )}
-            <MessageList messages={messages} onReply={handleReply} />
+            <MessageList
+                messages={messages}
+                onReply={handleReply}
+                onDeleteMessage={handleDeleteMessage}
+                currentUserId={userId}
+            />
             <div className="message-input">
+                <CustomEmojiPicker onEmojiClick={handleEmojiClick} />
                 <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSendMessage();
+                        }
+                    }}
                     placeholder="Введите сообщение"
                 />
-                <input type="file" accept="image/*" onChange={handleFileChange} /> {}
+                <input type="file" accept="image/*" onChange={handleFileChange} />
                 <button onClick={handleSendMessage}>Отправить</button>
             </div>
         </div>

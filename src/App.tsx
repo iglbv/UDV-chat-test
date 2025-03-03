@@ -4,6 +4,7 @@ import { LoginForm } from "./components/LoginForm";
 import { ChatRoom } from "./components/ChatRoom";
 import { ChatList } from "./components/ChatList";
 import { Toolbar } from "./components/Toolbar";
+import { Footer } from "./components/Footer";
 import { ChatRoom as ChatRoomType, User } from "./types";
 import { loadChatRooms, saveChatRooms } from "./utils/storage";
 
@@ -15,13 +16,18 @@ export const App = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
 
   useEffect(() => {
-    setRooms(loadChatRooms());
-  }, []);
-
-  useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
+    }
+
+    const savedRoomId = localStorage.getItem("selectedRoomId");
+    if (savedRoomId) {
+      const rooms = loadChatRooms();
+      const selectedRoom = rooms.find((room) => room.id === savedRoomId);
+      if (selectedRoom) {
+        setRoom(selectedRoom);
+      }
     }
   }, []);
 
@@ -33,9 +39,14 @@ export const App = () => {
     setShowLoginForm(false);
   };
 
+  const handleLoginClick = () => {
+    setShowLoginForm(true);
+  };
+
   const handleSelectRoom = (selectedRoom: ChatRoomType) => {
     if (user) {
       setRoom(selectedRoom);
+      localStorage.setItem("selectedRoomId", selectedRoom.id);
     } else {
       setShowLoginForm(true);
     }
@@ -48,6 +59,7 @@ export const App = () => {
       saveChatRooms(updatedRooms);
       setRooms(updatedRooms);
       setRoom(newRoom);
+      localStorage.setItem("selectedRoomId", newRoom.id);
     }
   };
 
@@ -60,22 +72,21 @@ export const App = () => {
 
       if (room?.id === roomId) {
         setRoom(null);
+        localStorage.removeItem("selectedRoomId");
       }
     }
   };
 
   const handleChatLogout = () => {
     setRoom(null);
+    localStorage.removeItem("selectedRoomId");
   };
 
   const handleToolbarLogout = () => {
     setUser(null);
     setRoom(null);
     localStorage.removeItem("user");
-  };
-
-  const handleLoginClick = () => {
-    setShowLoginForm(true);
+    localStorage.removeItem("selectedRoomId");
   };
 
   return (
@@ -106,6 +117,7 @@ export const App = () => {
           </>
         )}
       </div>
+      <Footer /> 
     </div>
   );
 };

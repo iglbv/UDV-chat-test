@@ -36,22 +36,26 @@ export const ChatList = ({
             <div className="chat-list-content">
                 <h2>UDV CHAT</h2>
                 <h3>Доступные чаты</h3>
-                <ul className="chat-list">
-                    {rooms.map((room) => (
-                        <li key={room.id} onClick={() => onSelectRoom(room)}>
-                            <span>{room.name}</span>
-                            <button
-                                className="delete-button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDeleteRoom(room.id);
-                                }}
-                            >
-                                Удалить
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                {rooms.length === 0 ? (
+                    <p className="no-chats-message">На данный момент нет созданных чатов.</p>
+                ) : (
+                    <ul className="chat-list">
+                        {rooms.map((room) => (
+                            <li key={room.id} onClick={() => onSelectRoom(room)}>
+                                <span>{room.name}</span>
+                                <button
+                                    className="delete-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDeleteRoom(room.id);
+                                    }}
+                                >
+                                    Удалить
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
                 <div className="create-room">
                     <input
                         type="text"

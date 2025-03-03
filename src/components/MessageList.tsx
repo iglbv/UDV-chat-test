@@ -4,9 +4,11 @@ import { useRef, useEffect } from "react";
 interface MessageListProps {
     messages: Message[];
     onReply: (message: Message) => void;
+    onDeleteMessage: (messageId: string) => void;
+    currentUserId: string;
 }
 
-export const MessageList = ({ messages, onReply }: MessageListProps) => {
+export const MessageList = ({ messages, onReply, onDeleteMessage, currentUserId }: MessageListProps) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -31,10 +33,24 @@ export const MessageList = ({ messages, onReply }: MessageListProps) => {
                             )}
                             {message.text}
                             {message.mediaUrl && (
-                                <img src={message.mediaUrl} alt="Media" className="message-media" />
+                                <div className="media-container">
+                                    <img src={message.mediaUrl} alt="Media" className="message-media" />
+                                </div>
                             )}
                         </div>
-                        <button className="reply-button" onClick={() => onReply(message)}>Ответить</button>
+                        <div className="message-actions">
+                            <button className="reply-button" onClick={() => onReply(message)}>
+                                Ответить
+                            </button>
+                            {message.userId === currentUserId && (
+                                <button
+                                    className="delete-button"
+                                    onClick={() => onDeleteMessage(message.id)}
+                                >
+                                    Удалить
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />

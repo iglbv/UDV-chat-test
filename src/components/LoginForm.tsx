@@ -15,7 +15,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
     return (
         <div className="login-container">
             <div className="login-form">
-                <h2>UDV CHAT</h2>
+                <h2>Добро пожаловать в UDV CHAT!</h2>
+                <p>Пожалуйста, войдите в систему, чтобы начать общение.</p>
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
