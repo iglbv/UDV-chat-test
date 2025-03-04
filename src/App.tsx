@@ -31,14 +31,12 @@ export const App = () => {
     }
   }, []);
 
-  // Синхронизация между вкладками
   useEffect(() => {
     const handleStorageUpdate = (e: StorageEvent) => {
       if (e.key === CHAT_ROOMS_KEY) {
         const updatedRooms = loadChatRooms();
         setRooms(updatedRooms);
 
-        // Обновляем текущую комнату если она существует
         if (room) {
           const currentRoom = updatedRooms.find(r => r.id === room.id);
           if (currentRoom) {
@@ -58,7 +56,7 @@ export const App = () => {
   const updateRooms = (updatedRooms: ChatRoomType[]) => {
     setRooms(updatedRooms);
     saveChatRooms(updatedRooms);
-    localStorage.setItem(CHAT_ROOMS_KEY, JSON.stringify(updatedRooms)); // Явный триггер события
+    localStorage.setItem(CHAT_ROOMS_KEY, JSON.stringify(updatedRooms));
   };
 
   const handleLogin = (userName: string) => {

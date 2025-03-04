@@ -11,6 +11,15 @@ interface ChatListProps {
     setRooms: (rooms: ChatRoom[]) => void;
 }
 
+const motivationalQuotes = [
+    "Общение - это начало понимания.",
+    "В диалоге рождается истина.",
+    "Каждое сообщение - это шаг к сближению.",
+    "Творите историю в каждом чате."
+];
+
+const emojis = ["😊", "🚀", "🌟", "💬", "🎉", "🤖", "💡", "👋"];
+
 export const ChatList = ({
     rooms,
     onSelectRoom,
@@ -32,10 +41,16 @@ export const ChatList = ({
         }
     };
 
+    const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+
     return (
         <div className="chat-list-container">
             <div className="chat-list-content">
-                <h2>UDV CHAT</h2>
+                <h2>UDV CHAT {emoji}</h2>
+                <p className="chat-list-quote">
+                    {quote}
+                </p>
                 <h3>Доступные чаты</h3>
                 {rooms.length === 0 ? (
                     <p className="no-chats-message">На данный момент нет созданных чатов.</p>

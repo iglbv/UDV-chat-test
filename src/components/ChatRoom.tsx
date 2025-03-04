@@ -1,7 +1,7 @@
 import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
 import { useState, useEffect } from "react";
-import { loadChatRooms, saveChatRooms, CHAT_ROOMS_KEY } from "../utils/storage";
+import { loadChatRooms, CHAT_ROOMS_KEY } from "../utils/storage";
 
 interface ChatRoomProps {
     room: ChatRoomType;
@@ -23,7 +23,6 @@ export const ChatRoom = ({
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    // Синхронизация сообщений
     useEffect(() => {
         const interval = setInterval(() => {
             const rooms = loadChatRooms();

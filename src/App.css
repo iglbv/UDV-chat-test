@@ -545,8 +545,6 @@ body {
   margin: 0;
 }
 
-/* Reactions */
-
 .message-content-wrapper {
   position: relative;
 }
@@ -676,6 +674,42 @@ body {
 
 .default-avatar {
   text-transform: uppercase;
+}
+
+.edit-button {
+  background-color: transparent;
+  border: none;
+  color: var(--secondary-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity var(--transition-speed);
+}
+
+.message:hover .edit-button {
+  opacity: 1;
+}
+
+.edit-button:hover {
+  background-color: var(--hover-color);
+  color: white;
+}
+
+.edited-label {
+  color: #999;
+  font-style: italic;
+  font-size: 0.8em;
+  margin-left: 0.5rem;
+}
+
+.chat-list-quote {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  margin-top: -1rem;
+  margin-bottom: 1rem;
 }
 
 @keyframes fadeIn {

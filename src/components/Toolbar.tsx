@@ -16,7 +16,7 @@ export const Toolbar = ({
             <div className="toolbar-title" onClick={onTitleClick}>
                 UDV CHAT
             </div>
-            {user && ( // Показываем только для авторизованных пользователей
+            {user && (
                 <>
                     <span className="toolbar-greeting">Привет, {user.name}!</span>
                     <button className="toolbar-logout-button" onClick={onLogoutClick}>

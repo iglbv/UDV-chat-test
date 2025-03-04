@@ -16,7 +16,8 @@ export interface Message {
     timestamp: number;
     replyTo?: string;
     mediaUrl?: string;
-    reactions?: Reaction[]; // Добавляем реакции
+    reactions?: Reaction[];
+    isEdited?: boolean;
 }
 
 export interface ChatRoom {
