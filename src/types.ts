@@ -3,6 +3,11 @@ export interface User {
     name: string;
 }
 
+export interface Reaction {
+    type: string;
+    userId: string;
+}
+
 export interface Message {
     id: string;
     text: string;
@@ -11,6 +16,7 @@ export interface Message {
     timestamp: number;
     replyTo?: string;
     mediaUrl?: string;
+    reactions?: Reaction[]; // Добавляем реакции
 }
 
 export interface ChatRoom {

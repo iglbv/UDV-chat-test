@@ -1,8 +1,7 @@
 import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
-import { CustomEmojiPicker } from "./EmojiPicker";
-import { useState } from "react";
-import { loadChatRooms } from "../utils/storage";
+import { useState, useEffect } from "react";
+import { loadChatRooms, saveChatRooms, CHAT_ROOMS_KEY } from "../utils/storage";
 
 interface ChatRoomProps {
     room: ChatRoomType;
@@ -12,11 +11,38 @@ interface ChatRoomProps {
     updateRooms: (rooms: ChatRoomType[]) => void;
 }
 
-export const ChatRoom = ({ room, userId, userName, onLogout, updateRooms }: ChatRoomProps) => {
+export const ChatRoom = ({
+    room,
+    userId,
+    userName,
+    onLogout,
+    updateRooms
+}: ChatRoomProps) => {
     const [messages, setMessages] = useState<Message[]>(room.messages);
     const [newMessage, setNewMessage] = useState("");
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    // Синхронизация сообщений
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const rooms = loadChatRooms();
+            const currentRoom = rooms.find(r => r.id === room.id);
+            if (currentRoom) {
+                setMessages(currentRoom.messages);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [room.id]);
+
+    const updateMessages = (newMessages: Message[]) => {
+        const updatedRoom = { ...room, messages: newMessages };
+        const rooms = loadChatRooms();
+        const updatedRooms = rooms.map(r => r.id === room.id ? updatedRoom : r);
+        updateRooms(updatedRooms);
+        localStorage.setItem(CHAT_ROOMS_KEY, JSON.stringify(updatedRooms));
+    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -42,12 +68,7 @@ export const ChatRoom = ({ room, userId, userName, onLogout, updateRooms }: Chat
             };
 
             const updatedMessages = [...messages, message];
-            setMessages(updatedMessages);
-
-            const updatedRoom = { ...room, messages: updatedMessages };
-            const rooms = loadChatRooms();
-            const updatedRooms = rooms.map((r) => (r.id === room.id ? updatedRoom : r));
-            updateRooms(updatedRooms);
+            updateMessages(updatedMessages);
 
             setNewMessage("");
             setReplyToMessage(null);
@@ -56,22 +77,13 @@ export const ChatRoom = ({ room, userId, userName, onLogout, updateRooms }: Chat
     };
 
     const handleDeleteMessage = (messageId: string) => {
-        const updatedMessages = messages.filter((message) => message.id !== messageId);
-        setMessages(updatedMessages);
-
-        const updatedRoom = { ...room, messages: updatedMessages };
-        const rooms = loadChatRooms();
-        const updatedRooms = rooms.map((r) => (r.id === room.id ? updatedRoom : r));
-        updateRooms(updatedRooms);
+        const updatedMessages = messages.filter(message => message.id !== messageId);
+        updateMessages(updatedMessages);
     };
 
     const handleReply = (message: Message) => {
         setReplyToMessage(message);
         setNewMessage(`@${message.userName}: `);
-    };
-
-    const handleEmojiClick = (emoji: string) => {
-        setNewMessage((prevMessage) => prevMessage + emoji);
     };
 
     return (
@@ -91,20 +103,23 @@ export const ChatRoom = ({ room, userId, userName, onLogout, updateRooms }: Chat
                     </button>
                 </div>
             </div>
+
             {replyToMessage && (
                 <div className="replying-to">
                     Ответ пользователю {replyToMessage.userName}: {replyToMessage.text}
                     <button onClick={() => setReplyToMessage(null)}>Отмена</button>
                 </div>
             )}
+
             <MessageList
                 messages={messages}
                 onReply={handleReply}
                 onDeleteMessage={handleDeleteMessage}
                 currentUserId={userId}
+                onUpdateMessages={updateMessages}
             />
+
             <div className="message-input">
-                <CustomEmojiPicker onEmojiClick={handleEmojiClick} />
                 <input
                     type="text"
                     value={newMessage}
@@ -116,7 +131,11 @@ export const ChatRoom = ({ room, userId, userName, onLogout, updateRooms }: Chat
                     }}
                     placeholder="Введите сообщение"
                 />
-                <input type="file" accept="image/*" onChange={handleFileChange} />
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                />
                 <button onClick={handleSendMessage}>Отправить</button>
             </div>
         </div>

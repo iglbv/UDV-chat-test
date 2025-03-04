@@ -6,7 +6,7 @@ import { ChatList } from "./components/ChatList";
 import { Toolbar } from "./components/Toolbar";
 import { Footer } from "./components/Footer";
 import { ChatRoom as ChatRoomType, User } from "./types";
-import { loadChatRooms, saveChatRooms } from "./utils/storage";
+import { loadChatRooms, saveChatRooms, CHAT_ROOMS_KEY } from "./utils/storage";
 
 export const App = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -16,12 +16,12 @@ export const App = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const savedUser = sessionStorage.getItem("user");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
 
-    const savedRoomId = localStorage.getItem("selectedRoomId");
+    const savedRoomId = sessionStorage.getItem("selectedRoomId");
     if (savedRoomId) {
       const rooms = loadChatRooms();
       const selectedRoom = rooms.find((room) => room.id === savedRoomId);
@@ -31,9 +31,34 @@ export const App = () => {
     }
   }, []);
 
+  // Синхронизация между вкладками
+  useEffect(() => {
+    const handleStorageUpdate = (e: StorageEvent) => {
+      if (e.key === CHAT_ROOMS_KEY) {
+        const updatedRooms = loadChatRooms();
+        setRooms(updatedRooms);
+
+        // Обновляем текущую комнату если она существует
+        if (room) {
+          const currentRoom = updatedRooms.find(r => r.id === room.id);
+          if (currentRoom) {
+            setRoom(currentRoom);
+          } else {
+            setRoom(null);
+            sessionStorage.removeItem("selectedRoomId");
+          }
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageUpdate);
+    return () => window.removeEventListener('storage', handleStorageUpdate);
+  }, [room]);
+
   const updateRooms = (updatedRooms: ChatRoomType[]) => {
     setRooms(updatedRooms);
     saveChatRooms(updatedRooms);
+    localStorage.setItem(CHAT_ROOMS_KEY, JSON.stringify(updatedRooms)); // Явный триггер события
   };
 
   const handleLogin = (userName: string) => {
@@ -42,14 +67,14 @@ export const App = () => {
       name: userName,
     };
     setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
+    sessionStorage.setItem("user", JSON.stringify(user));
     setShowLoginForm(false);
   };
 
   const handleSelectRoom = (selectedRoom: ChatRoomType) => {
     if (user) {
       setRoom(selectedRoom);
-      localStorage.setItem("selectedRoomId", selectedRoom.id);
+      sessionStorage.setItem("selectedRoomId", selectedRoom.id);
     } else {
       setShowLoginForm(true);
     }
@@ -66,12 +91,11 @@ export const App = () => {
       };
       const updatedRooms = [...rooms, newRoom];
       updateRooms(updatedRooms);
-      setRoom(newRoom); 
-      localStorage.setItem("selectedRoomId", newRoom.id);
+      setRoom(newRoom);
+      sessionStorage.setItem("selectedRoomId", newRoom.id);
     }
   };
 
-  // Обработчик удаления комнаты
   const handleDeleteRoom = (roomId: string) => {
     const roomToDelete = rooms.find((room) => room.id === roomId);
     if (roomToDelete && user && roomToDelete.creatorId === user.id) {
@@ -82,7 +106,7 @@ export const App = () => {
 
         if (room?.id === roomId) {
           setRoom(null);
-          localStorage.removeItem("selectedRoomId");
+          sessionStorage.removeItem("selectedRoomId");
         }
       }
     } else {
@@ -92,26 +116,25 @@ export const App = () => {
 
   const handleChatLogout = () => {
     setRoom(null);
-    localStorage.removeItem("selectedRoomId");
+    sessionStorage.removeItem("selectedRoomId");
   };
 
   const handleToolbarLogout = () => {
     setUser(null);
     setRoom(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("selectedRoomId");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("selectedRoomId");
   };
 
   const handleTitleClick = () => {
     setRoom(null);
-    localStorage.removeItem("selectedRoomId");
+    sessionStorage.removeItem("selectedRoomId");
   };
 
   return (
     <div>
       <Toolbar
         user={user}
-        onLoginClick={() => setShowLoginForm(true)}
         onLogoutClick={handleToolbarLogout}
         onTitleClick={handleTitleClick}
       />
@@ -137,7 +160,7 @@ export const App = () => {
                 userId={user.id}
                 userName={user.name}
                 onLogout={handleChatLogout}
-                updateRooms={updateRooms} 
+                updateRooms={updateRooms}
               />
             )}
           </>
