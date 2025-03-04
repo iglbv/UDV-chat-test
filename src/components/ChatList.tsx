@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ChatRoom, User } from "../types";
 
 interface ChatListProps {
@@ -29,6 +30,15 @@ export const ChatList = ({
     setNewRoomName,
     user,
 }: ChatListProps) => {
+    const [quote] = useState(() => motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+    const [emoji] = useState(() => emojis[Math.floor(Math.random() * emojis.length)]);
+    const [searchQuery, setSearchQuery] = useState(""); // Состояние для поискового запроса
+
+    // Функция для фильтрации чатов по названию
+    const filteredRooms = rooms.filter((room) =>
+        room.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     const handleCreateRoom = () => {
         if (newRoomName.trim()) {
             const roomNameExists = rooms.some((room) => room.name === newRoomName.trim());
@@ -41,8 +51,16 @@ export const ChatList = ({
         }
     };
 
-    const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value.length <= 30) {
+            setNewRoomName(value);
+        }
+    };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value); // Обновляем поисковый запрос
+    };
 
     return (
         <div className="chat-list-container">
@@ -52,11 +70,22 @@ export const ChatList = ({
                     {quote}
                 </p>
                 <h3>Доступные чаты</h3>
-                {rooms.length === 0 ? (
-                    <p className="no-chats-message">На данный момент нет созданных чатов.</p>
+
+                {/* Поле для поиска чатов */}
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Поиск чатов..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                </div>
+
+                {filteredRooms.length === 0 ? (
+                    <p className="no-chats-message">Чатов не найдено.</p>
                 ) : (
                     <ul className="chat-list">
-                        {rooms.map((room) => (
+                        {filteredRooms.map((room) => (
                             <li key={room.id} onClick={() => onSelectRoom(room)}>
                                 <div className="chat-info">
                                     <div className="chat-avatar">
@@ -79,12 +108,13 @@ export const ChatList = ({
                         ))}
                     </ul>
                 )}
+
                 <div className="create-room">
                     <input
                         type="text"
                         placeholder="Название нового чата"
                         value={newRoomName}
-                        onChange={(e) => setNewRoomName(e.target.value)}
+                        onChange={handleInputChange}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 handleCreateRoom();
@@ -92,6 +122,9 @@ export const ChatList = ({
                         }}
                     />
                     <button onClick={handleCreateRoom}>Создать чат</button>
+                    {newRoomName.length === 30 && (
+                        <p className="input-warning">Достигнуто максимальное количество символов (30)</p>
+                    )}
                 </div>
             </div>
         </div>

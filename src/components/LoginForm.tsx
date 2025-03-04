@@ -9,7 +9,18 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onLogin(userName);
+        if (userName.trim().length > 20) {
+            alert("Имя пользователя не должно превышать 20 символов.");
+            return;
+        }
+        onLogin(userName.trim());
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value.length <= 20) {
+            setUserName(value);
+        }
     };
 
     return (
@@ -22,10 +33,13 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                         type="text"
                         placeholder="Ваше имя"
                         value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
+                        onChange={handleInputChange}
                         required
                     />
                     <button type="submit">Войти</button>
+                    {userName.length === 20 && (
+                        <p className="input-warning">Достигнуто максимальное количество символов (20)</p>
+                    )}
                 </form>
             </div>
         </div>
