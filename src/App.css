@@ -99,6 +99,7 @@ body {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .chat-room h2 {
@@ -176,6 +177,7 @@ body {
 
 .chat-header {
   position: sticky;
+  top: 0;
   z-index: 100;
   background-color: var(--primary-color);
   color: white;
@@ -274,13 +276,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-}
-
-.message-list-container {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  max-height: calc(100vh - 350px);
 }
 
 .message {
