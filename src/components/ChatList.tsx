@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChatRoom, User } from "../types";
+import { useNavigate } from 'react-router-dom';
 
 interface ChatListProps {
     rooms: ChatRoom[];
@@ -32,9 +33,9 @@ export const ChatList = ({
 }: ChatListProps) => {
     const [quote] = useState(() => motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
     const [emoji] = useState(() => emojis[Math.floor(Math.random() * emojis.length)]);
-    const [searchQuery, setSearchQuery] = useState(""); // Состояние для поискового запроса
+    const [searchQuery, setSearchQuery] = useState("");
+    const navigate = useNavigate();
 
-    // Функция для фильтрации чатов по названию
     const filteredRooms = rooms.filter((room) =>
         room.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -59,7 +60,11 @@ export const ChatList = ({
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value); // Обновляем поисковый запрос
+        setSearchQuery(e.target.value);
+    };
+
+    const handleSelectRoom = (room: ChatRoom) => {
+        navigate(`/room/${room.id}`);
     };
 
     return (
@@ -70,8 +75,6 @@ export const ChatList = ({
                     {quote}
                 </p>
                 <h3>Доступные чаты</h3>
-
-                {/* Поле для поиска чатов */}
                 <div className="search-container">
                     <input
                         type="text"
@@ -86,7 +89,7 @@ export const ChatList = ({
                 ) : (
                     <ul className="chat-list">
                         {filteredRooms.map((room) => (
-                            <li key={room.id} onClick={() => onSelectRoom(room)}>
+                            <li key={room.id} onClick={() => handleSelectRoom(room)}>
                                 <div className="chat-info">
                                     <div className="chat-avatar">
                                         <div className="default-avatar">{room.name[0]}</div>

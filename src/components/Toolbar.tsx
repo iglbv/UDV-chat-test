@@ -1,4 +1,5 @@
 import { User } from "../types";
+import { Link } from 'react-router-dom';
 
 interface ToolbarProps {
     user: User | null;
@@ -13,9 +14,9 @@ export const Toolbar = ({
 }: ToolbarProps) => {
     return (
         <div className="toolbar">
-            <div className="toolbar-title" onClick={onTitleClick}>
+            <Link to="/chatrooms" className="toolbar-title" onClick={onTitleClick}>
                 UDV CHAT
-            </div>
+            </Link>
             {user && (
                 <>
                     <span className="toolbar-greeting">Привет, {user.name}!</span>

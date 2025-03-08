@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
     onLogin: (userName: string) => void;
@@ -6,6 +7,7 @@ interface LoginFormProps {
 
 export const LoginForm = ({ onLogin }: LoginFormProps) => {
     const [userName, setUserName] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -14,6 +16,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
             return;
         }
         onLogin(userName.trim());
+        navigate("/");
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
