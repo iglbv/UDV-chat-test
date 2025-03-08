@@ -19,8 +19,15 @@ export const MessageList = ({
     onUpdateMessages
 }: MessageListProps) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     const [editedMessageText, setEditedMessageText] = useState("");
+
+    useEffect(() => {
+        if (editingMessageId && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [editingMessageId]);
 
     const handleReact = (messageId: string, reaction: string) => {
         const updatedMessages = messages.map(msg => {
@@ -70,11 +77,16 @@ export const MessageList = ({
         setEditedMessageText("");
     };
 
+    const handleCancelEdit = () => {
+        setEditingMessageId(null);
+        setEditedMessageText("");
+    };
+
     return (
         <div className="message-list-container">
             <div className="message-list">
                 {messages.map((message) => (
-                    <div key={message.id} className="message">
+                    <div key={message.id} className={`message ${editingMessageId === message.id ? 'editing' : ''}`}>
                         <strong>{message.userName}:</strong>
                         <div className="message-content-wrapper">
                             <div className="message-content">
@@ -96,16 +108,27 @@ export const MessageList = ({
                                     </div>
                                 )}
                                 {editingMessageId === message.id ? (
-                                    <input
-                                        type="text"
-                                        value={editedMessageText}
-                                        onChange={(e) => setEditedMessageText(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleSaveEditedMessage(message.id);
-                                            }
-                                        }}
-                                    />
+                                    <>
+                                        <input
+                                            ref={inputRef}
+                                            type="text"
+                                            value={editedMessageText}
+                                            onChange={(e) => setEditedMessageText(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    handleSaveEditedMessage(message.id);
+                                                }
+                                            }}
+                                        />
+                                        <div className="edit-buttons">
+                                            <button className="save-button" onClick={() => handleSaveEditedMessage(message.id)}>
+                                                Сохранить
+                                            </button>
+                                            <button className="cancel-button" onClick={handleCancelEdit}>
+                                                Отмена
+                                            </button>
+                                        </div>
+                                    </>
                                 ) : (
                                     <>
                                         {message.text}
@@ -133,32 +156,36 @@ export const MessageList = ({
                                         {reaction}
                                     </button>
                                 ))}
+                                <div className="reaction-divider"></div>
+                                {message.userId === currentUserId && (
+                                    <div className="edit-icon-wrapper">
+                                        <button
+                                            className="edit-icon-button"
+                                            onClick={() => handleEditMessage(message.id, message.text)}
+                                            title="Изменить"
+                                        >
+                                            ✏️
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         <div className="message-actions">
-                            {message.userId === currentUserId && (
-                                <>
-                                    <button
-                                        className="edit-button"
-                                        onClick={() => handleEditMessage(message.id, message.text)}
-                                    >
-                                        Редактировать
-                                    </button>
-                                    <button
-                                        className="delete-message-button"
-                                        onClick={() => onDeleteMessage(message.id)}
-                                    >
-                                        Удалить
-                                    </button>
-                                </>
-                            )}
                             <button
                                 className="reply-button"
                                 onClick={() => onReply(message)}
                             >
                                 Ответить
                             </button>
+                            {message.userId === currentUserId && (
+                                <button
+                                    className="delete-message-button"
+                                    onClick={() => onDeleteMessage(message.id)}
+                                >
+                                    Удалить
+                                </button>
+                            )}
                         </div>
                         {message.reactions && message.reactions.length > 0 && (
                             <div className="message-reactions">
