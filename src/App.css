@@ -276,6 +276,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  min-height: calc(100vh - 350px);
   max-height: calc(100vh - 350px);
 }
 

@@ -12,7 +12,7 @@ import { loadChatRooms, saveChatRooms, CHAT_ROOMS_KEY } from "./utils/storage";
 
 export const App = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [rooms, setRooms] = useState<ChatRoomType[]>(loadChatRooms());
+  const [rooms, setRooms] = useState<ChatRoomType[]>([]);
   const [newRoomName, setNewRoomName] = useState("");
 
   useEffect(() => {
@@ -20,6 +20,9 @@ export const App = () => {
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
+
+    const loadedRooms = loadChatRooms();
+    setRooms(loadedRooms);
   }, []);
 
   useEffect(() => {
@@ -76,9 +79,13 @@ export const App = () => {
     }
   };
 
+  const handleSelectRoom = (roomId: string) => {
+    window.location.href = `/room/${roomId}`;
+  };
+
   const handleToolbarLogout = () => {
     setUser(null);
-    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("user"); 
   };
 
   return (

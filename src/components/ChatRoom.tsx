@@ -2,7 +2,7 @@ import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
 import { useState, useEffect } from "react";
 import { loadChatRooms, CHAT_ROOMS_KEY } from "../utils/storage";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 interface ChatRoomProps {
     userId: string;
@@ -32,7 +32,7 @@ export const ChatRoom = ({
             setRoom(currentRoom);
             setMessages(currentRoom.messages);
         } else {
-            navigate("/");
+            navigate("/chatrooms");
         }
     }, [roomId, navigate]);
 
@@ -100,11 +100,6 @@ export const ChatRoom = ({
         setNewMessage(`@${message.userName}: `);
     };
 
-    const handleLogout = () => {
-        onLogout();
-        navigate("/");
-    };
-
     if (!room) {
         return null;
     }
@@ -121,7 +116,7 @@ export const ChatRoom = ({
                         <div className="default-avatar">{userName[0]}</div>
                     </div>
                     <span>Пользователь: {userName}</span>
-                    <button className="logout-button" onClick={handleLogout}>
+                    <button className="logout-button" onClick={onLogout}>
                         Выйти из чата
                     </button>
                 </div>
