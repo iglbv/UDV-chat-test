@@ -4,13 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 interface ChatListProps {
     rooms: ChatRoom[];
-    onSelectRoom: (room: ChatRoom) => void;
     onCreateRoom: (roomName: string) => void;
     onDeleteRoom: (roomId: string) => void;
     newRoomName: string;
     setNewRoomName: (name: string) => void;
     user: User | null;
-    setRooms: (rooms: ChatRoom[]) => void;
 }
 
 const motivationalQuotes = [
@@ -24,7 +22,6 @@ const emojis = ["😊", "🚀", "🌟", "💬", "🎉", "🤖", "💡", "👋"];
 
 export const ChatList = ({
     rooms,
-    onSelectRoom,
     onCreateRoom,
     onDeleteRoom,
     newRoomName,

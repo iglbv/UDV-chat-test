@@ -8,40 +8,19 @@ import { Toolbar } from "./components/Toolbar";
 import { Footer } from "./components/Footer";
 import { NotFoundPage } from "./components/NotFoundPage";
 import { ChatRoom as ChatRoomType, User } from "./types";
-import { loadChatRooms, saveChatRooms, CHAT_ROOMS_KEY } from "./utils/storage";
+import { useStorage } from "./providers/StorageProvider";
 
 export const App = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [rooms, setRooms] = useState<ChatRoomType[]>([]);
   const [newRoomName, setNewRoomName] = useState("");
+  const { rooms, saveRooms } = useStorage();
 
   useEffect(() => {
     const savedUser = sessionStorage.getItem("user");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
-
-    const loadedRooms = loadChatRooms();
-    setRooms(loadedRooms);
   }, []);
-
-  useEffect(() => {
-    const handleStorageUpdate = (e: StorageEvent) => {
-      if (e.key === CHAT_ROOMS_KEY) {
-        const updatedRooms = loadChatRooms();
-        setRooms(updatedRooms);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageUpdate);
-    return () => window.removeEventListener('storage', handleStorageUpdate);
-  }, []);
-
-  const updateRooms = (updatedRooms: ChatRoomType[]) => {
-    setRooms(updatedRooms);
-    saveChatRooms(updatedRooms);
-    localStorage.setItem(CHAT_ROOMS_KEY, JSON.stringify(updatedRooms));
-  };
 
   const handleLogin = (userName: string) => {
     const user: User = {
@@ -62,7 +41,7 @@ export const App = () => {
         avatarUrl: "",
       };
       const updatedRooms = [...rooms, newRoom];
-      updateRooms(updatedRooms);
+      saveRooms(updatedRooms);
     }
   };
 
@@ -72,20 +51,16 @@ export const App = () => {
       const confirmDelete = window.confirm("Вы точно хотите удалить этот чат? Все данные будут утеряны.");
       if (confirmDelete) {
         const updatedRooms = rooms.filter((room) => room.id !== roomId);
-        updateRooms(updatedRooms);
+        saveRooms(updatedRooms);
       }
     } else {
       alert("Вы не можете удалить этот чат, так как вы не являетесь его создателем.");
     }
   };
 
-  const handleSelectRoom = (roomId: string) => {
-    window.location.href = `/room/${roomId}`;
-  };
-
   const handleToolbarLogout = () => {
     setUser(null);
-    sessionStorage.removeItem("user"); 
+    sessionStorage.removeItem("user");
   };
 
   return (
@@ -103,13 +78,11 @@ export const App = () => {
             <Route path="/chatrooms" element={user ? (
               <ChatList
                 rooms={rooms}
-                onSelectRoom={(room) => window.location.href = `/room/${room.id}`}
                 onCreateRoom={handleCreateRoom}
                 onDeleteRoom={handleDeleteRoom}
                 newRoomName={newRoomName}
                 setNewRoomName={setNewRoomName}
                 user={user}
-                setRooms={setRooms}
               />
             ) : <Navigate to="/login" />} />
             <Route path="/room/:roomId" element={user ? (
@@ -117,7 +90,6 @@ export const App = () => {
                 userId={user.id}
                 userName={user.name}
                 onLogout={() => window.location.href = "/chatrooms"}
-                updateRooms={updateRooms}
               />
             ) : <Navigate to="/login" />} />
             <Route path="*" element={<NotFoundPage />} />

@@ -1,21 +1,19 @@
 import { MessageList } from "./MessageList";
 import { ChatRoom as ChatRoomType, Message } from "../types";
 import { useState, useEffect } from "react";
-import { loadChatRooms, CHAT_ROOMS_KEY } from "../utils/storage";
 import { useParams, useNavigate } from 'react-router-dom';
+import { useStorage } from "../providers/StorageProvider";
 
 interface ChatRoomProps {
     userId: string;
     userName: string;
     onLogout: () => void;
-    updateRooms: (rooms: ChatRoomType[]) => void;
 }
 
 export const ChatRoom = ({
     userId,
     userName,
     onLogout,
-    updateRooms
 }: ChatRoomProps) => {
     const { roomId } = useParams<{ roomId: string }>();
     const [room, setRoom] = useState<ChatRoomType | null>(null);
@@ -24,9 +22,9 @@ export const ChatRoom = ({
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const navigate = useNavigate();
+    const { rooms, saveRooms } = useStorage();
 
     useEffect(() => {
-        const rooms = loadChatRooms();
         const currentRoom = rooms.find(r => r.id === roomId);
         if (currentRoom) {
             setRoom(currentRoom);
@@ -34,11 +32,10 @@ export const ChatRoom = ({
         } else {
             navigate("/chatrooms");
         }
-    }, [roomId, navigate]);
+    }, [roomId, navigate, rooms]);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const rooms = loadChatRooms();
             const currentRoom = rooms.find(r => r.id === roomId);
             if (currentRoom) {
                 setMessages(currentRoom.messages);
@@ -46,16 +43,14 @@ export const ChatRoom = ({
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [roomId]);
+    }, [roomId, rooms]);
 
     const updateMessages = (newMessages: Message[]) => {
         if (!room) return;
 
         const updatedRoom = { ...room, messages: newMessages };
-        const rooms = loadChatRooms();
         const updatedRooms = rooms.map(r => r.id === room.id ? updatedRoom : r);
-        updateRooms(updatedRooms);
-        localStorage.setItem(CHAT_ROOMS_KEY, JSON.stringify(updatedRooms));
+        saveRooms(updatedRooms);
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
