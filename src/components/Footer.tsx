@@ -47,7 +47,7 @@ export const Footer = () => {
     return (
         <FooterContainer>
             <FooterText>
-                <FooterLink href="t.me/ilyaglbv" target="_blank" rel="noopener noreferrer">
+                <FooterLink href="https://t.me/ilyaglbv" target="_blank" rel="noopener noreferrer">
                     Илья Голубев @ilyaglbv 2025
                 </FooterLink>
             </FooterText>
