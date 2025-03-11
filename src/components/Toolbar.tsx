@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { User } from "../types";
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
@@ -49,6 +48,19 @@ const ToolbarGreeting = styled.span`
     margin-right: 1rem;
 `;
 
+const ToolbarProfileLink = styled(Link)`
+    font-size: 1rem;
+    color: #ecf0f1;
+    margin-right: 1rem;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+
+    &:hover {
+        color: #1abc9c;
+        transform: translateY(-2px);
+    }
+`;
+
 const ToolbarLogoutButton = styled.button`
     background-color: #1abc9c;
     color: white;
@@ -83,6 +95,7 @@ export const Toolbar = ({
             {user && (
                 <>
                     <ToolbarGreeting>Привет, {user.name}!</ToolbarGreeting>
+                    <ToolbarProfileLink to="/profile">Профиль</ToolbarProfileLink>
                     <ToolbarLogoutButton onClick={onLogoutClick}>
                         Выйти
                     </ToolbarLogoutButton>

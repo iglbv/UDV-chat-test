@@ -6,6 +6,7 @@ import { ChatList } from "./components/ChatList";
 import { Toolbar } from "./components/Toolbar";
 import { Footer } from "./components/Footer";
 import { NotFoundPage } from "./components/NotFoundPage";
+import { ProfilePage } from "./components/ProfilePage"; // Импортируем новый компонент
 import { ChatRoom as ChatRoomType, User } from "./types";
 import { useStorage } from "./providers/StorageProvider";
 import { GlobalStyles } from './styles/GlobalStyles';
@@ -41,6 +42,20 @@ const AppContent = () => {
     };
     setUser(user);
     sessionStorage.setItem("user", JSON.stringify(user));
+  };
+
+  const handleUpdateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+    const updatedRooms = rooms.map(room => ({
+      ...room,
+      messages: room.messages.map(message =>
+        message.userId === updatedUser.id ? { ...message, userName: updatedUser.name } : message
+      ),
+      creatorId: room.creatorId === updatedUser.id ? updatedUser.id : room.creatorId,
+    }));
+    saveRooms(updatedRooms);
   };
 
   const handleCreateRoom = (roomName: string) => {
@@ -102,6 +117,12 @@ const AppContent = () => {
               userId={user.id}
               userName={user.name}
               onLogout={() => navigate("/chatrooms")}
+            />
+          ) : <Navigate to="/login" />} />
+          <Route path="/profile" element={user ? (
+            <ProfilePage
+              user={user}
+              onUpdateUser={handleUpdateUser}
             />
           ) : <Navigate to="/login" />} />
           <Route path="*" element={<NotFoundPage />} />
