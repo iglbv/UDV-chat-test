@@ -20,7 +20,7 @@ const MessageListContainer = styled.div`
     flex-direction: column;
     min-height: calc(100vh - 400px);
     max-height: calc(100vh - 400px);
-    padding: 1rem;
+    padding: 2rem;
 `;
 
 const MessageItem = styled.div`
@@ -239,6 +239,16 @@ export const MessageList = ({
     const inputRef = useRef<HTMLInputElement>(null);
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     const [editedMessageText, setEditedMessageText] = useState("");
+    const prevMessagesLength = useRef(messages.length);
+
+    useEffect(() => {
+        if (messages.length > prevMessagesLength.current) {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+        prevMessagesLength.current = messages.length;
+    }, [messages]);
 
     useEffect(() => {
         if (editingMessageId && inputRef.current) {
@@ -371,7 +381,7 @@ export const MessageList = ({
                                         {reaction}
                                     </ReactionOption>
                                 ))}
-                                <div style={{ margin: "0 0.5rem", color: "#000", padding: "3px"}}>|</div>
+                                <div style={{ margin: "0 0.5rem", color: "#000", padding: "3px" }}>|</div>
                                 {message.userId === currentUserId && (
                                     <ReactionOption
                                         onClick={() => handleEditMessage(message.id, message.text)}

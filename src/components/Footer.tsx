@@ -33,10 +33,24 @@ const FooterText = styled.p`
     }
 `;
 
+const FooterLink = styled.a`
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: #1abc9c;
+    }
+`;
+
 export const Footer = () => {
     return (
         <FooterContainer>
-            <FooterText>Илья Голубев @ilyaglbv 2025</FooterText>
+            <FooterText>
+                <FooterLink href="t.me/ilyaglbv" target="_blank" rel="noopener noreferrer">
+                    Илья Голубев @ilyaglbv 2025
+                </FooterLink>
+            </FooterText>
         </FooterContainer>
     );
 };

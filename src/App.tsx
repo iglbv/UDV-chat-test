@@ -6,7 +6,7 @@ import { ChatList } from "./components/ChatList";
 import { Toolbar } from "./components/Toolbar";
 import { Footer } from "./components/Footer";
 import { NotFoundPage } from "./components/NotFoundPage";
-import { ProfilePage } from "./components/ProfilePage"; // Импортируем новый компонент
+import { ProfilePage } from "./components/ProfilePage";
 import { ChatRoom as ChatRoomType, User } from "./types";
 import { useStorage } from "./providers/StorageProvider";
 import { GlobalStyles } from './styles/GlobalStyles';
