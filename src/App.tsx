@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { LoginForm } from "./components/LoginForm";
 import { ChatRoom } from "./components/ChatRoom";
@@ -9,11 +8,24 @@ import { Footer } from "./components/Footer";
 import { NotFoundPage } from "./components/NotFoundPage";
 import { ChatRoom as ChatRoomType, User } from "./types";
 import { useStorage } from "./providers/StorageProvider";
+import { GlobalStyles } from './styles/GlobalStyles';
+import styled from '@emotion/styled';
 
-export const App = () => {
+const ContentContainer = styled.div`
+  margin-top: 70px;
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 40px;
+`;
+
+const AppContent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [newRoomName, setNewRoomName] = useState("");
   const { rooms, saveRooms } = useStorage();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedUser = sessionStorage.getItem("user");
@@ -61,42 +73,50 @@ export const App = () => {
   const handleToolbarLogout = () => {
     setUser(null);
     sessionStorage.removeItem("user");
+    navigate("/chatrooms");
   };
 
   return (
+    <>
+      <Toolbar
+        user={user}
+        onLogoutClick={handleToolbarLogout}
+        onTitleClick={() => navigate("/chatrooms")}
+      />
+      <ContentContainer>
+        <Routes>
+          <Route path="/login" element={!user ? <LoginForm onLogin={handleLogin} /> : <Navigate to="/chatrooms" />} />
+          <Route path="/" element={<Navigate to="/chatrooms" />} />
+          <Route path="/chatrooms" element={user ? (
+            <ChatList
+              rooms={rooms}
+              onCreateRoom={handleCreateRoom}
+              onDeleteRoom={handleDeleteRoom}
+              newRoomName={newRoomName}
+              setNewRoomName={setNewRoomName}
+              user={user}
+            />
+          ) : <Navigate to="/login" />} />
+          <Route path="/room/:roomId" element={user ? (
+            <ChatRoom
+              userId={user.id}
+              userName={user.name}
+              onLogout={() => navigate("/chatrooms")}
+            />
+          ) : <Navigate to="/login" />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </ContentContainer>
+      <Footer />
+    </>
+  );
+};
+
+export const App = () => {
+  return (
     <Router>
-      <div>
-        <Toolbar
-          user={user}
-          onLogoutClick={handleToolbarLogout}
-          onTitleClick={() => window.location.href = "/chatrooms"}
-        />
-        <div className="content">
-          <Routes>
-            <Route path="/login" element={!user ? <LoginForm onLogin={handleLogin} /> : <Navigate to="/chatrooms" />} />
-            <Route path="/" element={<Navigate to="/chatrooms" />} />
-            <Route path="/chatrooms" element={user ? (
-              <ChatList
-                rooms={rooms}
-                onCreateRoom={handleCreateRoom}
-                onDeleteRoom={handleDeleteRoom}
-                newRoomName={newRoomName}
-                setNewRoomName={setNewRoomName}
-                user={user}
-              />
-            ) : <Navigate to="/login" />} />
-            <Route path="/room/:roomId" element={user ? (
-              <ChatRoom
-                userId={user.id}
-                userName={user.name}
-                onLogout={() => window.location.href = "/chatrooms"}
-              />
-            ) : <Navigate to="/login" />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </div>
-        <Footer />
-      </div>
+      <GlobalStyles />
+      <AppContent />
     </Router>
   );
 };
