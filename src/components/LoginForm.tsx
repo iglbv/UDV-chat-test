@@ -120,7 +120,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
     return (
         <LoginContainer>
             <LoginFormContainer>
-                <LoginHeader>Добро пожаловать в UDV CHAT!</LoginHeader>
+                <LoginHeader>Добро пожаловать в RTF CHAT!</LoginHeader>
                 <LoginDescription>
                     Пожалуйста, войдите в систему, чтобы начать общение.
                 </LoginDescription>

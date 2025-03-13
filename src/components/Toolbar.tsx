@@ -90,7 +90,7 @@ export const Toolbar = ({
     return (
         <ToolbarContainer>
             <ToolbarTitle to="/chatrooms" onClick={onTitleClick}>
-                UDV CHAT
+                RTF CHAT
             </ToolbarTitle>
             {user && (
                 <>

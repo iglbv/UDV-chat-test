@@ -269,7 +269,7 @@ export const ChatList = ({
     return (
         <ChatListContainer>
             <ChatListContent>
-                <ChatListHeader>UDV CHAT {emoji}</ChatListHeader>
+                <ChatListHeader>RTF CHAT {emoji}</ChatListHeader>
                 <ChatListQuote>{quote}</ChatListQuote>
                 <h3>Доступные чаты</h3>
                 <SearchContainer>
